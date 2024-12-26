@@ -26,6 +26,7 @@ public class BeanConfiguration {
     private final UserEntityMapper userEntityMapper;
     private final IRolRepository rolRepository;
     private final RolEntityMapper rolEntityMapper;
+    
 
     @Bean
     public IUserPersistencePort userPersistencePort(){

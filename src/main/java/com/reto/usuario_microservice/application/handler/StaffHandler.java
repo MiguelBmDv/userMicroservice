@@ -28,11 +28,11 @@ public class StaffHandler implements IStaffHandler  {
     private final RolResolver rolResolver;
 
     @Override
-    public void saveUserInStaff(StaffRequest staffRequest) {
+    public void saveUserInStaff(StaffRequest staffRequest, String currentUserRoleAuthority, String endpoint)    {
         Long rolId = rolResolver.resolveRoleId(staffRequest.getRol());
         User user = staffRequestMapper.toUser(staffRequest);
         user.setRolId(rolId);
-        userServicePort.saveUser(user);
+        userServicePort.saveUser(user, currentUserRoleAuthority, endpoint);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class StaffHandler implements IStaffHandler  {
         return staffResponseMapper.toResponseList(userServicePort.getAllUsers(),  rolServicePort.getAllRols());
     }
 
-    
+
     @Override
     public StaffResponse getUserFromStaff(Long userDocumentNumber) {
         User user = userServicePort.getUser(userDocumentNumber);

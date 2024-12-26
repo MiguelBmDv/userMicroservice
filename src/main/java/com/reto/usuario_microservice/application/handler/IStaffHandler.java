@@ -7,7 +7,7 @@ import com.reto.usuario_microservice.application.dto.StaffResponse;
 
 public interface IStaffHandler {
 
-    void saveUserInStaff(StaffRequest staffRequest);
+    void saveUserInStaff(StaffRequest staffRequest, String currentUserRoleAuthority, String endpoint);
 
     List<StaffResponse> getAllUserFromStaff();
 

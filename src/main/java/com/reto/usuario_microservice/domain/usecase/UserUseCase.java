@@ -23,9 +23,10 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
-    public void saveUser(User user) {
+    public void saveUser(User user, String currentUserRoleAuthority, String endpoint) {
         validateUser(user);
         validateRole(user.getRolId()); 
+        validateRoleForEndpoint(user, currentUserRoleAuthority, endpoint);
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
         userPersistencePort.saveUser(user);
@@ -79,9 +80,9 @@ public class UserUseCase implements IUserServicePort {
     }
     
     private boolean isValidRolId(Long rolId) {
-        // Compara con los IDs definidos en RolConstants
         return rolId.equals(RolConstants.ADMIN_ROL_ID) || 
                rolId.equals(RolConstants.EMPLOYEE_ROL_ID) || 
+               rolId.equals(RolConstants.USER_ROL_ID) || 
                rolId.equals(RolConstants.OWNER_ROL_ID);
     }
 
@@ -110,6 +111,22 @@ public class UserUseCase implements IUserServicePort {
         }
         if (age < 18) {
             throw new IllegalArgumentException("El usuario debe ser mayor de edad");
+        }
+    }
+
+    private void validateRoleForEndpoint(User user, String currentUserRoleAuthority, String endpoint) {
+        if (endpoint.equals("/auth/register")) {
+            // Sin JWT: Asignar rol por defecto como USER (4)
+            user.setRolId(RolConstants.USER_ROL_ID);
+        } else if (endpoint.equals("/staff")) {
+            // Con JWT: Validar si el rol es OWNER
+            if ("OWNER".equals(currentUserRoleAuthority)) {
+                user.setRolId(RolConstants.EMPLOYEE_ROL_ID); // Asignar rol EMPLOYEE (2)
+            } else {
+                throw new IllegalArgumentException("No tiene permisos para crear usuarios en /staff");
+            }
+        } else {
+            throw new IllegalArgumentException("Endpoint no reconocido para validación de roles");
         }
     }
 

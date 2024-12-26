@@ -6,7 +6,7 @@ import com.reto.usuario_microservice.domain.model.User;
 
 public interface IUserServicePort {
 
-    void saveUser (User user);
+    void saveUser(User user, String currentUserRoleAuthority, String endpoint);
 
     List<User> getAllUsers();
 
