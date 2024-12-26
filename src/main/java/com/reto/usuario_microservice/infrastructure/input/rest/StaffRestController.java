@@ -15,8 +15,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -42,7 +40,7 @@ public class StaffRestController {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("No se encontró un token JWT válido en el encabezado Authorization");
         }
-        
+
         String token = authorizationHeader.substring(7);
         List<Map<String, String>> roles = jwtService.extractRoles(token);
 
