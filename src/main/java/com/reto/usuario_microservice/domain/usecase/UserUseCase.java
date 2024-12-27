@@ -60,7 +60,9 @@ public class UserUseCase implements IUserServicePort {
         validateEmail(user.getEmail());
         validatePhone(user.getPhone());
         validateDocumentNumber(user.getDocumentNumber());
-        validateAge(user.getDateOfBirth());
+        if (!isUserWithRole(user.getRolId())) {
+            validateAge(user.getDateOfBirth());
+        }
     }
 
     private void validateEmail(String email) {
@@ -73,12 +75,12 @@ public class UserUseCase implements IUserServicePort {
     }
 
     private void validateRole(Long rolId) {
-        // Verifica si el ID del rol es válido
         if (!isValidRolId(rolId)) {
             throw new IllegalArgumentException("El ID del rol proporcionado no es válido: " + rolId);
         }
     }
-    
+     
+
     private boolean isValidRolId(Long rolId) {
         return rolId.equals(RolConstants.ADMIN_ROL_ID) || 
                rolId.equals(RolConstants.EMPLOYEE_ROL_ID) || 
@@ -96,11 +98,13 @@ public class UserUseCase implements IUserServicePort {
         if (documentNumber == null) {
             throw new IllegalArgumentException("El documento de identidad no puede ser nulo");
         }
-        // Aquí puedes agregar validaciones adicionales si necesitas, como un rango de valores específicos
-        // Si, por ejemplo, el documento debe tener un número mínimo de dígitos, puedes hacer algo como:
         if (documentNumber.toString().length() < 7) {
             throw new IllegalArgumentException("El documento de identidad debe tener al menos 7 dígitos");
         }
+    }
+
+    private boolean isUserWithRole(Long rolId) {
+        return rolId.equals(RolConstants.USER_ROL_ID);
     }
 
     private void validateAge(LocalDate birthDate) {
@@ -114,14 +118,13 @@ public class UserUseCase implements IUserServicePort {
         }
     }
 
+
     private void validateRoleForEndpoint(User user, String currentUserRoleAuthority, String endpoint) {
         if (endpoint.equals("/auth/register")) {
-            // Sin JWT: Asignar rol por defecto como USER (4)
             user.setRolId(RolConstants.USER_ROL_ID);
         } else if (endpoint.equals("/staff")) {
-            // Con JWT: Validar si el rol es OWNER
             if ("OWNER".equals(currentUserRoleAuthority)) {
-                user.setRolId(RolConstants.EMPLOYEE_ROL_ID); // Asignar rol EMPLOYEE (2)
+                user.setRolId(RolConstants.EMPLOYEE_ROL_ID);
             } else {
                 throw new IllegalArgumentException("No tiene permisos para crear usuarios en /staff");
             }

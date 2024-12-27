@@ -76,5 +76,6 @@ public class StaffRestController {
         staffHandler.deleteUserFromStaff(userDocumentNumber);
         return ResponseEntity.noContent().build();
     }
-
+ 
+    
 }

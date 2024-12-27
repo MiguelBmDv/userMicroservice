@@ -69,10 +69,12 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization header missing or incorrect");
         }
     }
+    
 
     @PostMapping("/register")
     public ResponseEntity<Void> saveUserInStaff(@RequestBody StaffRequest staffRequest){
         staffHandler.saveUserInStaff(staffRequest, null, "/auth/register");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 }
