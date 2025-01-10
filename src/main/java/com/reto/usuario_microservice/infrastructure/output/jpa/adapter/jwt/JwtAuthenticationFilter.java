@@ -28,39 +28,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Evitar la validación en rutas públicas
         if (request.getRequestURI().startsWith("/auth/") || request.getRequestURI().startsWith("/login/")) {
             filterChain.doFilter(request, response);
-            return; // No procesar el JWT en estas rutas
+            return;
         }
 
         String jwt = extractJwtFromRequest(request);
         if (jwt != null) {
-            String username = jwtService.extractUsername(jwt); // Extraemos el username del token
-
+            String username = jwtService.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Cargar detalles del usuario
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    // Si el token es válido, establecer el contexto de seguridad
                     UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         }
-
-        // Continuar con la cadena de filtros
         filterChain.doFilter(request, response);
     }
 
-    // Extraer el token JWT del encabezado de la solicitud
     private String extractJwtFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7); // Eliminar "Bearer " del inicio
+            return header.substring(7);
         }
         return null;
     }

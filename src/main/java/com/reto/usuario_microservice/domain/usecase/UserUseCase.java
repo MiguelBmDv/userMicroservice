@@ -120,6 +120,9 @@ public class UserUseCase implements IUserServicePort {
 
 
     private void validateRoleForEndpoint(User user, String currentUserRoleAuthority, String endpoint) {
+        if ("ADMIN".equals(currentUserRoleAuthority)) {
+            return; 
+        }
         if (endpoint.equals("/auth/register")) {
             user.setRolId(RolConstants.USER_ROL_ID);
         } else if (endpoint.equals("/staff")) {

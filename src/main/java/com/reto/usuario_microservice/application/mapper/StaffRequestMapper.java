@@ -12,6 +12,7 @@ import com.reto.usuario_microservice.domain.model.User;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface StaffRequestMapper {
+    
     User toUser(StaffRequest staffRequest);
     
     @Mapping(target = "id", ignore = true) 
